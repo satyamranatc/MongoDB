@@ -1,0 +1,67 @@
+const { MongoClient } = require('mongodb');
+
+class MyModel 
+{
+  constructor() 
+  {
+    this.client = new MongoClient('mongodb://localhost:27017');
+  }
+
+  async connect() 
+  {
+    await this.client.connect();
+    console.log('Connected to the database');
+  }
+
+  async insertData(collectionName, data) 
+  {
+    await this.connect();
+    const db = this.client.db("Company");
+    const myCollection = db.collection(collectionName);
+    await myCollection.insertOne(data);
+    console.log("Data inserted successfully");
+  }
+
+  async updateData(collectionName, filter, update) 
+  {
+    await this.connect();
+    const db = this.client.db("Company");
+    const myCollection = db.collection(collectionName);
+    await myCollection.updateOne(filter, update);
+    console.log('Document updated successfully');
+  }
+
+  async deleteData(collectionName, obj) 
+  {
+    await this.connect();
+    const db = this.client.db("Company");
+    const myCollection = db.collection(collectionName);
+    await myCollection.deleteOne(obj);
+    console.log('Document deleted successfully');
+  }
+
+  async readData(collectionName) 
+  {
+    await this.connect();
+    const db = this.client.db("Company");
+    const myCollection = db.collection(collectionName);
+    const result = await myCollection.find().toArray();
+    this.displayData(result);
+  }
+
+  displayData(result) 
+  {
+    result.forEach(element => 
+    {
+      console.log(element);
+    });
+  }
+}
+
+// Example usage
+const MyDb = new MyModel();
+MyDb.readData('Employee');
+// Uncomment the following lines to test insert, update, and delete operations
+// database.insertData('Employee', { "Name": "Satyam Doe", "Age": 18 });
+// database.updateData('Employee', { Name: 'Satyam Doe' }, { $set: { Age: 26 } });
+// database.deleteData('Employee', { Name: 'Satyam Doe' });
